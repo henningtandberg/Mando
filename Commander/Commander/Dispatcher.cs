@@ -2,19 +2,27 @@ namespace Commander;
 
 internal sealed class Dispatcher(IEnumerable<ICommandHandler> handlers) : IDispatcher
 {
-    public Task Dispatch(ICommand command)
+    public async Task Dispatch(ICommand command)
     {
-        var handler = handlers
-            .FirstOrDefault(h => h.GetType()
-                .GetInterfaces()
-                .Any(i => i.IsGenericType &&
-                          i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) &&
-                          i.GetGenericArguments()[0] == command.GetType()));
+        var matchingHandlers = handlers
+            .Where(h => CanHandle(h, command))
+            .ToList();
 
-        if (handler is null)
-            throw new InvalidOperationException($"No handler for {command.GetType()}");
+        if (matchingHandlers.Count == 0)
+            throw new InvalidOperationException($"No handlers for {command.GetType()}");
 
-        return InvokeHandler(handler, command);
+        var tasks = matchingHandlers
+            .Select(h => InvokeHandler(h, command));
+
+        await Task.WhenAll(tasks); 
+    }
+    
+    private static bool CanHandle(ICommandHandler handler, ICommand command)
+    {
+        return handler.GetType().GetInterfaces()
+            .Any(i => i.IsGenericType &&
+                      i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) &&
+                      i.GetGenericArguments()[0].IsInstanceOfType(command));
     }
 
     private static Task InvokeHandler(ICommandHandler handler, ICommand command)
