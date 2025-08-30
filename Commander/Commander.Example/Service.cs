@@ -1,6 +1,6 @@
-namespace Commander.Example;
+namespace Commander.Example; 
 
-public class Service : IService
+internal sealed class Service : IService
 {
     public Task DoSomething()
     {
