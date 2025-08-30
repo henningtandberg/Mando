@@ -2,31 +2,26 @@ namespace Commander;
 
 internal sealed class Dispatcher(IEnumerable<ICommandHandler> handlers) : IDispatcher
 {
-    public async Task Dispatch(ICommand command)
+    public Task Dispatch(ICommand command)
     {
-        var handler = handlers.FirstOrDefault(h => CanHandle(h, command)) ??
-                      throw new InvalidOperationException($"Could not find any handler for {command.GetType()}");
+        var handler = handlers
+            .FirstOrDefault(h => h.GetType()
+                .GetInterfaces()
+                .Any(i => i.IsGenericType &&
+                          i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) &&
+                          i.GetGenericArguments()[0] == command.GetType()));
 
-        await handler.Execute(command);
+        if (handler is null)
+            throw new InvalidOperationException($"No handler for {command.GetType()}");
+
+        return InvokeHandler(handler, command);
     }
 
-    private static bool CanHandle(ICommandHandler commandHandler, ICommand command)
+    private static Task InvokeHandler(ICommandHandler handler, ICommand command)
     {
-        var handlerType = commandHandler.GetType();
-        
-        var handlerInterfaceWithGenericArgument = handlerType
-            .GetInterfaces()
-            .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>));
+        var method = handler.GetType()
+            .GetMethod("Execute", [command.GetType()])!;
 
-        if (handlerInterfaceWithGenericArgument is null)
-        {
-            return false;
-        }
-
-        var genericArgumentType = handlerInterfaceWithGenericArgument
-            .GetGenericArguments()
-            .FirstOrDefault();
-
-        return genericArgumentType is not null && genericArgumentType.IsInstanceOfType(command);
-    }
+        return (Task)method.Invoke(handler, [command])!;
+    } 
 }
