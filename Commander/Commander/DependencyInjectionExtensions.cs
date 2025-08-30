@@ -1,5 +1,6 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Commander;
 
@@ -9,14 +10,18 @@ public static class DependencyInjectionExtensions
     {
         var handlerTypes = assembly.GetTypes()
             .Where(t => t is { IsAbstract: false, IsInterface: false })
-            .SelectMany(t => t.GetInterfaces()
-                .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>))
-                .Select(i => new { Handler = t, Service = i }));
+            .Where(t => t.GetInterfaces().Any(i =>
+                i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)));
 
         foreach (var t in handlerTypes)
         {
-            services.AddScoped(t.Service, t.Handler); // Register ICommandHandler<T>
-            services.AddScoped(typeof(ICommandHandler), t.Handler); // Register also as non-generic
+            foreach (var service in t.GetInterfaces()
+                         .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)))
+            {
+                services.AddScoped(service, t);
+            } 
+            
+            services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(ICommandHandler), t));
         }
 
         services.AddScoped<IDispatcher, Dispatcher>();
