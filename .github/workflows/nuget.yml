@@ -6,7 +6,7 @@ on:
 
 env:
   SOLUTION_NAME: "Mando"
-  PROJECT_PATH: "Mando/Mando.csproj"
+  PROJECT_PATH: "Mando.csproj"
   PACKAGE_OUTPUT_DIRECTORY: ${{ github.workspace }}/output
   NUGET_SOURCE_URL: "'https://api.nuget.org/v3/index.json'"
 
@@ -25,6 +25,9 @@ jobs:
           
       - name: "Current working directory"
         run: pwd
+
+      - name: "List repo files"
+        run: ls -R
 
       - name: "Restore packages"
         run: dotnet restore ${{ env.PROJECT_PATH }}
