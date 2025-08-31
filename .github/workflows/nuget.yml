@@ -22,6 +22,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "9.0.x"
+          
+      - name: "Current working directory"
+        run: pwd
 
       - name: "Restore packages"
         run: dotnet restore ${{ env.PROJECT_PATH }}
