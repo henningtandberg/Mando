@@ -6,7 +6,7 @@ namespace Mando;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddCommander(this IServiceCollection services, Assembly assembly)
+    public static IServiceCollection AddMando(this IServiceCollection services, Assembly assembly)
     {
         var handlerTypes = assembly.GetTypes()
             .Where(t => t is { IsAbstract: false, IsInterface: false })

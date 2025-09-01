@@ -10,7 +10,7 @@ var host = Host
         services
             .AddSingleton<IService, Service>()
             .AddSingleton<IApplication, Application>()
-            .AddCommander(Assembly.GetExecutingAssembly()))
+            .AddMando(Assembly.GetExecutingAssembly()))
     .Build();
 
 using var scope = host.Services.CreateScope();

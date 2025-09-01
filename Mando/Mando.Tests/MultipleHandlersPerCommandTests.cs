@@ -14,7 +14,7 @@ public class MultipleHandlersPerCommandTests
     {
         _dispatcher = new ServiceCollection()
             .AddSingleton<IStd>(_std)
-            .AddCommander(Assembly.GetExecutingAssembly())
+            .AddMando(Assembly.GetExecutingAssembly())
             .BuildServiceProvider()
             .GetRequiredService<IDispatcher>();
     }
