@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>Mando</RootNamespace>
         <PackageIcon>mando.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
