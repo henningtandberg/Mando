@@ -85,9 +85,9 @@ internal sealed MyCustomCommandHandler :
 }
 ```
 
-### Dependecny Injection
+### Dependency Injection
 ```csharp
-sercies.AddMando(Assembly.GetExecutingAssembly()))
+services.AddMando(Assembly.GetExecutingAssembly()))
 ```
 
 This registers
