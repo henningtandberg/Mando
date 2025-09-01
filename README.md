@@ -4,7 +4,7 @@
 [//]: # (You must have a lf before the markdown element when inside a block for it to work: https://stackoverflow.com/questions/29368902/how-can-i-wrap-my-markdown-in-an-html-div)
 # Mando
 A super lightweight and free alternative to libraries that provide
-decoupled, in-process communication such as MediatR.
+decoupled, in-process communication.
 
 <img src="./mando.png" width="50%">
 
