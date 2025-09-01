@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>Mando</RootNamespace>
-        <PackageIcon>../../mando.png</PackageIcon>
+        <PackageIcon>mando.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
