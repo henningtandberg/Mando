@@ -102,4 +102,4 @@ internal sealed class Application(IDispatcher dispatcher) : IApplication
 }
 ```
 
-Checkout [Mando.Example](https://github.com/henningtandberg/Mando/tree/main/Mando/Mando.Exmaple) for a working example.
+Checkout [Mando.Example](https://github.com/henningtandberg/Mando/tree/main/Mando/Mando.Example) for a working example.

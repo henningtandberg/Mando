@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mando", "Mando\Mando.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mando.Tests", "Mando.Tests\Mando.Tests.csproj", "{9BF37CC2-3060-43BD-B152-D28B564C93F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mando.Exmaple", "Mando.Exmaple\Mando.Exmaple.csproj", "{211F7332-1405-44D0-8E3C-8BDBA77C6338}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mando.Example", "Mando.Example\Mando.Example.csproj", "{211F7332-1405-44D0-8E3C-8BDBA77C6338}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
