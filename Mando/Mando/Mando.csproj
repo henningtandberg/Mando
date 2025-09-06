@@ -6,11 +6,11 @@
         <Nullable>enable</Nullable>
         <RootNamespace>Mando</RootNamespace>
         <PackageIcon>mando.png</PackageIcon>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReadmeFile>README.NuGet.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="../../README.md" Pack="true" PackagePath="\" />
+        <None Include="../../README.NuGet.md" Pack="true" PackagePath="\" />
         <None Include="../../mando.png" Pack="true" PackagePath="\" />
     </ItemGroup>
 
