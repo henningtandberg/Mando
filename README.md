@@ -30,7 +30,12 @@ The features of this library are limited by design, so that the library will
 be easier to extend if you decide to fork the repo and create a more custom
 implementation. The core features are, and will always be:
 
-### Single command, single handler.
+<h3>Single command, single handler</h3>
+<details>
+<summary>Code Example</summary>
+
+[//]: # (You must have a lf before the markdown element when inside a block for it to work: https://stackoverflow.com/questions/29368902/how-can-i-wrap-my-markdown-in-an-html-div)
+
 ```csharp
 internal sealed MyCustomCommand : ICommand;
 
@@ -43,7 +48,12 @@ internal sealed MyCustomCommandHandler : ICommandHandler<MyCustomCommand>
 }
 ```
 
-### Single command, multiple handlers.
+</details>
+
+<h3>Single command, multiple handlers</h3>
+<details>
+<summary>Code Example</summary>
+
 ```csharp
 internal sealed MyCustomCommand : ICommand;
 
@@ -64,7 +74,11 @@ internal sealed MyCustomCommandHandlerTwo : ICommandHandler<MyCustomCommand>
 }
 ```
 
-### Multiple commands, single handler
+</details>
+
+<h3>Multiple commands, single handler</h3>
+<details>
+<summary>Code Example</summary>
 
 ```csharp
 internal sealed MyCustomCommandOne : ICommand;
@@ -84,6 +98,8 @@ internal sealed MyCustomCommandHandler :
     }
 }
 ```
+
+</details>
 
 ### Dependency Injection
 ```csharp
