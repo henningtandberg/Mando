@@ -6,6 +6,12 @@ namespace Mando;
 
 public static class DependencyInjectionExtensions
 {
+    /// <summary>
+    /// This registers all implementations ICommandHandler&lt;TCommand&gt; as scoped, and IDispatcher as scoped
+    /// </summary>
+    /// <param name="services">The collection of services</param>
+    /// <param name="assembly">The executing assembly</param>
+    /// <returns>The collection of services with command handlers and the dispatcher added</returns>
     public static IServiceCollection AddMando(this IServiceCollection services, Assembly assembly)
     {
         var handlerTypes = assembly.GetTypes()
