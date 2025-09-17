@@ -17,12 +17,13 @@ public static class DependencyInjectionExtensions
         var handlerTypes = assembly.GetTypes()
             .Where(t => t is { IsAbstract: false, IsInterface: false })
             .Where(t => t.GetInterfaces().Any(i =>
-                i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)));
+                (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)) ||
+                (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>))));
 
         foreach (var t in handlerTypes)
         {
             foreach (var service in t.GetInterfaces()
-                         .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)))
+                         .Where(i => i.IsGenericType && (i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) || i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>))))
             {
                 services.AddScoped(service, t);
             } 
