@@ -1,7 +1,8 @@
-using Mando.Tests.Commands;
+using Mando.Command;
+using Mando.Tests.Command.Commands;
 using Mando.Tests.Setup;
 
-namespace Mando.Tests.CommandHandlers;
+namespace Mando.Tests.Command.CommandHandlers;
 
 public sealed class CommandHandlerTwo(IStd std) : ICommandHandler<CommandTwo>
 {

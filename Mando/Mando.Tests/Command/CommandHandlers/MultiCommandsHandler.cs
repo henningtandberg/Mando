@@ -1,6 +1,7 @@
+using Mando.Command;
 using Mando.Tests.Setup;
 
-namespace Mando.Tests.CommandHandlers;
+namespace Mando.Tests.Command.CommandHandlers;
 
 public class AuditHandler(IStd std) :
     ICommandHandler<CreateUser>,

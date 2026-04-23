@@ -1,4 +1,4 @@
-namespace Mando;
+namespace Mando.Command;
 
 internal sealed class Dispatcher(IEnumerable<ICommandHandler> handlers) : IDispatcher
 {

@@ -1,9 +1,10 @@
 using System.Reflection;
-using Mando.Tests.Commands;
+using Mando.Command;
+using Mando.Tests.Command.Commands;
 using Mando.Tests.Setup;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mando.Tests;
+namespace Mando.Tests.Command;
 
 public class CommandWithResultTests
 {

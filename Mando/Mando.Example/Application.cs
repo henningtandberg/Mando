@@ -1,3 +1,5 @@
+using Mando.Command;
+
 namespace Mando.Example;
 
 internal sealed class Application(IDispatcher dispatcher) : IApplication

@@ -1,4 +1,4 @@
-namespace Mando;
+namespace Mando.Command;
 
 /// <summary>
 /// Responsible for selecting the appropriate command handlers given the specified command

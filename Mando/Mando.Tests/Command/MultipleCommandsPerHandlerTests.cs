@@ -1,9 +1,10 @@
 using System.Reflection;
-using Mando.Tests.CommandHandlers;
+using Mando.Command;
+using Mando.Tests.Command.CommandHandlers;
 using Mando.Tests.Setup;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mando.Tests;
+namespace Mando.Tests.Command;
 
 public class MultipleCommandsPerHandlerTests 
 {

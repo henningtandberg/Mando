@@ -1,4 +1,4 @@
-﻿namespace Mando;
+﻿namespace Mando.Command;
 
 /// <summary>
 /// A command triggers one or more ICommandHandler&lt;TCommand&gt;, where TCommand implements ICommand

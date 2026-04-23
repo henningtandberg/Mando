@@ -1,4 +1,5 @@
 using System.Reflection;
+using Mando.Command;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

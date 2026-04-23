@@ -1,5 +1,6 @@
-namespace Mando.Tests.Commands;
-using Mando;
+using Mando.Command;
+
+namespace Mando.Tests.Command.Commands;
 
 public sealed class EchoCommand(string message) : ICommand<string>
 {

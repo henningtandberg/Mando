@@ -1,6 +1,7 @@
-using Mando.Tests.Commands;
+using Mando.Command;
+using Mando.Tests.Command.Commands;
 
-namespace Mando.Tests.CommandHandlers;
+namespace Mando.Tests.Command.CommandHandlers;
 
 public sealed class EchoCommandHandler : ICommandHandler<EchoCommand, string>
 {

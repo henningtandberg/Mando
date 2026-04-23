@@ -1,4 +1,4 @@
-namespace Mando;
+namespace Mando.Command;
 
 /// <summary>
 /// Defines the procedure to be executed by a command
