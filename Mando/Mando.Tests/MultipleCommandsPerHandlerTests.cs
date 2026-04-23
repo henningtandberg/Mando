@@ -9,14 +9,16 @@ public class MultipleCommandsPerHandlerTests
 {
     private readonly FakeStd _std = new();
     private readonly IDispatcher _dispatcher;
+    private readonly ServiceProvider _serviceProvider;
 
     public MultipleCommandsPerHandlerTests()
     {
-        _dispatcher = new ServiceCollection()
+        _serviceProvider = new ServiceCollection()
             .AddSingleton<IStd>(_std)
             .AddMando(Assembly.GetExecutingAssembly())
-            .BuildServiceProvider()
-            .GetRequiredService<IDispatcher>();
+            .BuildServiceProvider();
+        
+        _dispatcher = _serviceProvider.GetRequiredService<IDispatcher>();
     }
 
     [Fact]
@@ -35,5 +37,17 @@ public class MultipleCommandsPerHandlerTests
         };
         Assert.Equal(3, _std.Out.Count);
         Assert.Equivalent(expected, _std.Out, strict: true);
+    }
+
+    [Fact]
+    public void MultipleCommands_SingleCommandHandler_DifferentInstanceReturnedForEachCommandHandler()
+    {
+        var createUserCommandHandler = _serviceProvider.GetRequiredService<ICommandHandler<CreateUser>>();
+        var updateUserCommandHandler = _serviceProvider.GetRequiredService<ICommandHandler<UpdateUser>>();
+        var deleteUserCommandHandler = _serviceProvider.GetRequiredService<ICommandHandler<DeleteUser>>();
+        
+        Assert.NotSame(createUserCommandHandler, updateUserCommandHandler);
+        Assert.NotSame(createUserCommandHandler, deleteUserCommandHandler);
+        Assert.NotSame(updateUserCommandHandler, deleteUserCommandHandler);
     }
 }
