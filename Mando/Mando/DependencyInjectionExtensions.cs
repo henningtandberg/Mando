@@ -8,79 +8,79 @@ namespace Mando;
 
 public static class DependencyInjectionExtensions
 {
-    /// <summary>
-    /// This registers all implementations of Mando features, if any
-    /// </summary>
     /// <param name="services">The collection of services</param>
-    /// <param name="assembly">The executing assembly</param>
-    /// <returns>Service Collection with implementations of Mando features added</returns>
-    public static IServiceCollection AddMando(this IServiceCollection services, Assembly assembly)
+    extension(IServiceCollection services)
     {
-        return services
-            .AddMediator(assembly)
-            .AddEventBus(assembly);
-    }
-    
-    /// <summary>
-    /// This registers all implementations ICommandHandler&lt;TCommand&gt; as scoped, and IDispatcher as scoped
-    /// </summary>
-    /// <param name="services">The collection of services</param>
-    /// <param name="assembly">The executing assembly</param>
-    /// <returns>The collection of services with command handlers and the dispatcher added</returns>
-    private static IServiceCollection AddMediator(this IServiceCollection services, Assembly assembly)
-    {
-        var handlerTypes = assembly.GetTypes()
-            .Where(t => t is { IsAbstract: false, IsInterface: false })
-            .Where(t => t.GetInterfaces().Any(i =>
-                (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)) ||
-                (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>))));
-
-        foreach (var t in handlerTypes)
+        /// <summary>
+        /// This registers all implementations of Mando features, if any
+        /// </summary>
+        /// <param name="assembly">The executing assembly</param>
+        /// <returns>Service Collection with implementations of Mando features added</returns>
+        public IServiceCollection AddMando(Assembly assembly)
         {
-            foreach (var service in t.GetInterfaces()
-                         .Where(i => i.IsGenericType && (i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) || i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>))))
+            return services
+                .AddMediator(assembly)
+                .AddEventBus(assembly);
+        }
+
+        /// <summary>
+        /// This registers all implementations ICommandHandler&lt;TCommand&gt; as scoped, and IDispatcher as scoped
+        /// </summary>
+        /// <param name="assembly">The executing assembly</param>
+        /// <returns>The collection of services with command handlers and the dispatcher added</returns>
+        private IServiceCollection AddMediator(Assembly assembly)
+        {
+            var handlerTypes = assembly.GetTypes()
+                .Where(t => t is { IsAbstract: false, IsInterface: false })
+                .Where(t => t.GetInterfaces().Any(i =>
+                    (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<>)) ||
+                    (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>))));
+
+            foreach (var t in handlerTypes)
             {
-                services.AddScoped(service, t);
-            } 
+                foreach (var service in t.GetInterfaces()
+                             .Where(i => i.IsGenericType && (i.GetGenericTypeDefinition() == typeof(ICommandHandler<>) || i.GetGenericTypeDefinition() == typeof(ICommandHandler<,>))))
+                {
+                    services.AddScoped(service, t);
+                } 
             
-            services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(ICommandHandler), t));
-        }
-
-        services.AddScoped<IDispatcher, Dispatcher>();
-
-        return services;
-    }
-
-    /// <summary>
-    /// Registers all IEventSubscriber&lt;TEvent&gt; implementations as singletons and registers IEventBus.
-    /// Subscribers implementing multiple IEventSubscriber interfaces share the same instance.
-    /// </summary>
-    /// <param name="services">The collection of services</param>
-    /// <param name="assembly">The executing assembly</param>
-    /// <returns>The collection of services with event subscribers and the event bus added</returns>
-    private static IServiceCollection AddEventBus(this IServiceCollection services, Assembly assembly)
-    {
-        var subscriberTypes = assembly.GetTypes()
-            .Where(t => t is { IsAbstract: false, IsInterface: false })
-            .Where(t => t.GetInterfaces().Any(i =>
-                i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEventSubscriber<>)));
-
-        foreach (var concreteType in subscriberTypes)
-        {
-            services.TryAddSingleton(concreteType);
-
-            foreach (var iface in concreteType.GetInterfaces()
-                         .Where(i => i.IsGenericType &&
-                                     i.GetGenericTypeDefinition() == typeof(IEventSubscriber<>)))
-            {
-                var capturedIface = iface;
-                var capturedConcrete = concreteType;
-                services.AddSingleton(capturedIface, sp => sp.GetRequiredService(capturedConcrete));
+                services.TryAddEnumerable(ServiceDescriptor.Scoped(typeof(ICommandHandler), t));
             }
+
+            services.AddScoped<IDispatcher, Dispatcher>();
+
+            return services;
         }
 
-        services.AddSingleton<IEventBus, EventBus>();
+        /// <summary>
+        /// Registers all IEventSubscriber&lt;TEvent&gt; implementations as singletons and registers IEventBus.
+        /// Subscribers implementing multiple IEventSubscriber interfaces share the same instance.
+        /// </summary>
+        /// <param name="assembly">The executing assembly</param>
+        /// <returns>The collection of services with event subscribers and the event bus added</returns>
+        private IServiceCollection AddEventBus(Assembly assembly)
+        {
+            var subscriberImplementations = assembly.GetTypes()
+                .Where(t => t is { IsAbstract: false, IsInterface: false })
+                .Where(t => t.GetInterfaces().Any(i =>
+                    i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEventSubscriber<>)));
 
-        return services;
+            foreach (var subscriberImplementation in subscriberImplementations)
+            {
+                services.TryAddSingleton(subscriberImplementation);
+
+                foreach (var subscriberInterface in subscriberImplementation.GetInterfaces()
+                             .Where(i => i.IsGenericType &&
+                                         i.GetGenericTypeDefinition() == typeof(IEventSubscriber<>)))
+                {
+                    services.AddSingleton(subscriberInterface, sp =>
+                        sp.GetRequiredService(subscriberImplementation));
+                }
+            }
+
+            services.AddSingleton<IEventBus, EventBus>();
+
+            return services;
+        }
     }
 }

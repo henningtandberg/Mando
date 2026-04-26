@@ -9,15 +9,15 @@ namespace Mando.Tests.Event;
 
 public class SubscriberStatePersistsTests
 {
-    private readonly FakeStd _std = new();
     private readonly IEventBus _eventBus;
     private readonly ServiceProvider _serviceProvider;
 
     public SubscriberStatePersistsTests()
     {
         _serviceProvider = new ServiceCollection()
-            .AddSingleton<IStd>(_std)
+            .AddSingleton<IStd, FakeStd>()
             .AddMando(Assembly.GetExecutingAssembly())
+            .AddSingleton<ICounter>(sp => sp.GetRequiredService<MultiEventSubscriber>())
             .BuildServiceProvider();
 
         _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
@@ -30,7 +30,7 @@ public class SubscriberStatePersistsTests
         await _eventBus.Publish(new MultiEvent2());
         await _eventBus.Publish(new MultiEvent3());
 
-        var subscriber = _serviceProvider.GetRequiredService<MultiEventSubscriber>();
-        Assert.Equal(3, subscriber.HandleCount);
+        var counter = _serviceProvider.GetRequiredService<ICounter>();
+        Assert.Equal(3, counter.GetCount());
     }
 }

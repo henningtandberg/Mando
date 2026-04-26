@@ -7,30 +7,36 @@ namespace Mando.Tests.Event.EventSubscribers;
 public sealed class MultiEventSubscriber(IStd std) :
     IEventSubscriber<MultiEvent1>,
     IEventSubscriber<MultiEvent2>,
-    IEventSubscriber<MultiEvent3>
+    IEventSubscriber<MultiEvent3>,
+    ICounter
 {
-    private int _handleCount;
-
-    public int HandleCount => _handleCount;
+    private int _counter;
 
     public Task Handle(MultiEvent1 @event)
     {
-        _handleCount++;
-        std.Write($"MultiEventSubscriber handled MultiEvent1 (count: {_handleCount})");
+        _counter++;
+        std.Write($"MultiEventSubscriber handled MultiEvent1 (count: {_counter})");
         return Task.CompletedTask;
     }
 
     public Task Handle(MultiEvent2 @event)
     {
-        _handleCount++;
-        std.Write($"MultiEventSubscriber handled MultiEvent2 (count: {_handleCount})");
+        _counter++;
+        std.Write($"MultiEventSubscriber handled MultiEvent2 (count: {_counter})");
         return Task.CompletedTask;
     }
 
     public Task Handle(MultiEvent3 @event)
     {
-        _handleCount++;
-        std.Write($"MultiEventSubscriber handled MultiEvent3 (count: {_handleCount})");
+        _counter++;
+        std.Write($"MultiEventSubscriber handled MultiEvent3 (count: {_counter})");
         return Task.CompletedTask;
     }
+
+    public int GetCount() => _counter;
+}
+
+public interface ICounter
+{
+    public int GetCount();
 }
