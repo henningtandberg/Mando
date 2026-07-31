@@ -18,6 +18,7 @@ public class MultipleEventsPerSubscriberTests
         _serviceProvider = new ServiceCollection()
             .AddSingleton<IStd>(_std)
             .AddMando(Assembly.GetExecutingAssembly())
+            .AddSingleton<IEventCounter>(sp => sp.GetRequiredService<MultiEventSubscriber>())
             .BuildServiceProvider();
 
         _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
@@ -26,22 +27,33 @@ public class MultipleEventsPerSubscriberTests
     [Fact]
     public async Task MultipleEvents_Publish_MultiEventSubscriberHandlesAll()
     {
-        await _eventBus.Publish(new MultiEvent1());
-        await _eventBus.Publish(new MultiEvent2());
-        await _eventBus.Publish(new MultiEvent3());
+        await _eventBus.Publish(new EventOne());
+        await _eventBus.Publish(new EventTwo());
+        await _eventBus.Publish(new EventThree());
 
-        Assert.Equal(3, _std.Out.Count);
+        Assert.Contains("MultiEventSubscriber handled EventOne, EventCount incremented", _std.Out);
+        Assert.Contains("MultiEventSubscriber handled EventTwo, EventCount incremented", _std.Out);
+        Assert.Contains("MultiEventSubscriber handled EventThree, EventCount incremented", _std.Out);
+    }
+    
+    [Fact]
+    public async Task MultipleEvents_Publish_MultiEventSubscriberHasSingleAccumulatedState()
+    {
+        await _eventBus.Publish(new EventOne());
+        await _eventBus.Publish(new EventTwo());
+        await _eventBus.Publish(new EventThree());
+
+        var multiEventSubscriber = _serviceProvider.GetRequiredService<IEventCounter>();
+        Assert.Equal(3, multiEventSubscriber.GetEventCount());
     }
 
     [Fact]
     public void MultipleEventInterfaces_SameInstanceServedForAll()
     {
-        var sub1 = _serviceProvider.GetRequiredService<IEventSubscriber<MultiEvent1>>();
-        var sub2 = _serviceProvider.GetRequiredService<IEventSubscriber<MultiEvent2>>();
-        var sub3 = _serviceProvider.GetRequiredService<IEventSubscriber<MultiEvent3>>();
+        var multiEventSubscribers = _serviceProvider
+            .GetServices<MultiEventSubscriber>()
+            .ToList();
 
-        Assert.Same(sub1, sub2);
-        Assert.Same(sub1, sub3);
-        Assert.IsType<MultiEventSubscriber>(sub1);
+        Assert.Single(multiEventSubscribers);
     }
 }

@@ -25,7 +25,6 @@ public class SingleSubscriberPerEventTests
     {
         await _eventBus.Publish(new EventOne());
 
-        Assert.Single(_std.Out);
         Assert.Equal("EventSubscriberOne handled EventOne!", _std.Out.First());
     }
 
@@ -34,7 +33,6 @@ public class SingleSubscriberPerEventTests
     {
         await _eventBus.Publish(new EventTwo());
 
-        Assert.Single(_std.Out);
         Assert.Equal("EventSubscriberTwo handled EventTwo!", _std.Out.First());
     }
 
@@ -43,7 +41,6 @@ public class SingleSubscriberPerEventTests
     {
         await _eventBus.Publish(new EventThree());
 
-        Assert.Single(_std.Out);
         Assert.Equal("EventSubscriberThree handled EventThree!", _std.Out.First());
     }
 

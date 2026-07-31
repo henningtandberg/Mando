@@ -5,38 +5,38 @@ using Mando.Tests.Setup;
 namespace Mando.Tests.Event.EventSubscribers;
 
 public sealed class MultiEventSubscriber(IStd std) :
-    IEventSubscriber<MultiEvent1>,
-    IEventSubscriber<MultiEvent2>,
-    IEventSubscriber<MultiEvent3>,
-    ICounter
+    IEventSubscriber<EventOne>,
+    IEventSubscriber<EventTwo>,
+    IEventSubscriber<EventThree>,
+    IEventCounter
 {
-    private int _counter;
+    private int _eventCounter;
 
-    public Task Handle(MultiEvent1 @event)
+    public Task Handle(EventOne @event)
     {
-        _counter++;
-        std.Write($"MultiEventSubscriber handled MultiEvent1 (count: {_counter})");
+        _eventCounter++;
+        std.Write("MultiEventSubscriber handled EventOne, EventCount incremented");
         return Task.CompletedTask;
     }
 
-    public Task Handle(MultiEvent2 @event)
+    public Task Handle(EventTwo @event)
     {
-        _counter++;
-        std.Write($"MultiEventSubscriber handled MultiEvent2 (count: {_counter})");
+        _eventCounter++;
+        std.Write("MultiEventSubscriber handled EventTwo, EventCount incremented");
         return Task.CompletedTask;
     }
 
-    public Task Handle(MultiEvent3 @event)
+    public Task Handle(EventThree @event)
     {
-        _counter++;
-        std.Write($"MultiEventSubscriber handled MultiEvent3 (count: {_counter})");
+        _eventCounter++;
+        std.Write("MultiEventSubscriber handled EventThree, EventCount incremented");
         return Task.CompletedTask;
     }
 
-    public int GetCount() => _counter;
+    public int GetEventCount() => _eventCounter;
 }
 
-public interface ICounter
+public interface IEventCounter
 {
-    public int GetCount();
+    public int GetEventCount();
 }
