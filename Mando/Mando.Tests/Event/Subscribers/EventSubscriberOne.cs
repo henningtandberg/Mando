@@ -2,7 +2,7 @@ using Mando.Event;
 using Mando.Tests.Event.Events;
 using Mando.Tests.Setup;
 
-namespace Mando.Tests.Event.EventSubscribers;
+namespace Mando.Tests.Event.Subscribers;
 
 public sealed class EventSubscriberOne(IStd std) : IEventSubscriber<EventOne>
 {

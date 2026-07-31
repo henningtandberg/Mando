@@ -1,11 +1,10 @@
 using System.Reflection;
 using Mando.Event;
 using Mando.Tests.Event.Events;
-using Mando.Tests.Event.EventSubscribers;
 using Mando.Tests.Setup;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mando.Tests.Event;
+namespace Mando.Tests.Event.Subscribers;
 
 public class MultipleEventsPerSubscriberTests
 {

@@ -4,7 +4,7 @@ using Mando.Tests.Event.Events;
 using Mando.Tests.Setup;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mando.Tests.Event;
+namespace Mando.Tests.Event.Subscribers;
 
 public class SingleSubscriberPerEventTests
 {
