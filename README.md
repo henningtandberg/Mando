@@ -101,20 +101,106 @@ internal sealed MyCustomCommandHandler :
 
 </details>
 
+<h3>Command with a result</h3>
+<details>
+<summary>Code Example</summary>
+
+[//]: # (You must have a lf before the markdown element when inside a block for it to work: https://stackoverflow.com/questions/29368902/how-can-i-wrap-my-markdown-in-an-html-div)
+
+```csharp
+internal sealed record GetAnswerCommand : ICommand<int>;
+
+internal sealed class GetAnswerCommandHandler : ICommandHandler<GetAnswerCommand, int>
+{
+    public Task<int> Execute(GetAnswerCommand command)
+    {
+        return Task.FromResult(42);
+    }
+}
+
+// Dispatch and receive the result
+int answer = await dispatcher.Dispatch(new GetAnswerCommand());
+```
+
+</details>
+
+<h3>Events (publish / subscribe)</h3>
+Events are one-way notifications. A publisher fires an event and every subscriber
+for that event type is notified, staying fully decoupled from each other.
+
+<details>
+<summary>Code Example: subscriber registered via Dependency Injection</summary>
+
+[//]: # (You must have a lf before the markdown element when inside a block for it to work: https://stackoverflow.com/questions/29368902/how-can-i-wrap-my-markdown-in-an-html-div)
+
+```csharp
+internal sealed record OrderPlaced(int OrderId) : IEvent;
+
+// Discovered and registered automatically by AddMando
+internal sealed class OrderNotifier : IEventSubscriber<OrderPlaced>
+{
+    public Task Handle(OrderPlaced @event)
+    {
+        Console.WriteLine($"Order \"{@event.OrderId}\" has been placed!");
+        return Task.CompletedTask;
+    }
+}
+
+// Publish through IEventBus. All subscribers of OrderPlaced are notified.
+await eventBus.Publish(new OrderPlaced(1));
+```
+
+A single subscriber can implement multiple `IEventSubscriber<TEvent>` interfaces
+and will share one instance across all of them.
+
+</details>
+
+<details>
+<summary>Code Example: subscribe at runtime, anywhere</summary>
+
+[//]: # (You must have a lf before the markdown element when inside a block for it to work: https://stackoverflow.com/questions/29368902/how-can-i-wrap-my-markdown-in-an-html-div)
+
+```csharp
+// Subscribe at any point during execution, not only during DI setup.
+// Dispose the returned handle to remove the subscription.
+IEventSubscription subscription = eventBus.Subscribe<OrderPlaced>(@event =>
+{
+    Console.WriteLine($"Order \"{@event.OrderId}\" has been placed!");
+    return Task.CompletedTask;
+});
+
+await eventBus.Publish(new OrderPlaced(1)); // handler fires
+
+subscription.Dispose(); // handler no longer fires
+
+await eventBus.Publish(new OrderPlaced(2)); // nothing fires
+```
+
+Runtime subscriptions run alongside DI-registered subscribers. Subscribing and
+disposing are thread-safe, and safe to call concurrently with `Publish`.
+
+</details>
+
 ### Dependency Injection
 ```csharp
 services.AddMando(Assembly.GetExecutingAssembly()))
 ```
 
 This registers
-- `ICommandHandler<TCommand>` : All implementations are registered as Scoped
+- `ICommandHandler<TCommand>` and `ICommandHandler<TCommand, TResult>` : All implementations are registered as Scoped
 - `IDispatcher` as Scoped
+- `IEventSubscriber<TEvent>` : All implementations are registered as Singleton (one instance shared across all subscribed events)
+- `IEventBus` as Singleton
 
 ### Usage
 ```csharp
-internal sealed class Application(IDispatcher dispatcher) : IApplication
+internal sealed class Application(IDispatcher dispatcher, IEventBus eventBus) : IApplication
 {
-    public Task RunAsync() => dispatcher.Dispatch(new DoSomethingCommand());
+    public async Task RunAsync()
+    {
+        await dispatcher.Dispatch(new DoSomethingCommand());
+        await eventBus.Publish(new OrderPlaced(1));
+    }
 }
 ```
 

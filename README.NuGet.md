@@ -79,20 +79,82 @@ internal sealed MyCustomCommandHandler :
 }
 ```
 
+### Command with a result
+```csharp
+internal sealed record GetAnswerCommand : ICommand<int>;
+
+internal sealed class GetAnswerCommandHandler : ICommandHandler<GetAnswerCommand, int>
+{
+    public Task<int> Execute(GetAnswerCommand command)
+    {
+        return Task.FromResult(42);
+    }
+}
+
+// Dispatch and receive the result
+int answer = await dispatcher.Dispatch(new GetAnswerCommand());
+```
+
+### Events (publish / subscribe)
+Events are one-way notifications. A publisher fires an event and every subscriber
+for that event type is notified, staying fully decoupled from each other.
+
+Subscriber registered via Dependency Injection:
+```csharp
+internal sealed record OrderPlaced(int OrderId) : IEvent;
+
+// Discovered and registered automatically by AddMando
+internal sealed class OrderNotifier : IEventSubscriber<OrderPlaced>
+{
+    public Task Handle(OrderPlaced @event)
+    {
+        Console.WriteLine($"Order \"{@event.OrderId}\" has been placed!");
+        return Task.CompletedTask;
+    }
+}
+
+// Publish through IEventBus. All subscribers of OrderPlaced are notified.
+await eventBus.Publish(new OrderPlaced(1));
+```
+
+Subscribe at runtime, anywhere:
+```csharp
+// Subscribe at any point during execution, not only during DI setup.
+// Dispose the returned handle to remove the subscription.
+IEventSubscription subscription = eventBus.Subscribe<OrderPlaced>(@event =>
+{
+    Console.WriteLine($"Order \"{@event.OrderId}\" has been placed!");
+    return Task.CompletedTask;
+});
+
+await eventBus.Publish(new OrderPlaced(1)); // handler fires
+
+subscription.Dispose(); // handler no longer fires
+```
+
+Runtime subscriptions run alongside DI-registered subscribers. Subscribing and
+disposing are thread-safe, and safe to call concurrently with `Publish`.
+
 ### Dependency Injection
 ```csharp
 services.AddMando(Assembly.GetExecutingAssembly()))
 ```
 
 This registers
-- `ICommandHandler<TCommand>` : All implementations are registered as Scoped
+- `ICommandHandler<TCommand>` and `ICommandHandler<TCommand, TResult>` : All implementations are registered as Scoped
 - `IDispatcher` as Scoped
+- `IEventSubscriber<TEvent>` : All implementations are registered as Singleton (one instance shared across all subscribed events)
+- `IEventBus` as Singleton
 
 ### Usage
 ```csharp
-internal sealed class Application(IDispatcher dispatcher) : IApplication
+internal sealed class Application(IDispatcher dispatcher, IEventBus eventBus) : IApplication
 {
-    public Task RunAsync() => dispatcher.Dispatch(new DoSomethingCommand());
+    public async Task RunAsync()
+    {
+        await dispatcher.Dispatch(new DoSomethingCommand());
+        await eventBus.Publish(new OrderPlaced(1));
+    }
 }
 ```
 
