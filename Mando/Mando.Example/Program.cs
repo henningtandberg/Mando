@@ -10,7 +10,8 @@ var host = Host
         services
             .AddSingleton<IService, Service>()
             .AddSingleton<IApplication, Application>()
-            .AddMando(Assembly.GetExecutingAssembly()))
+            .AddMando(Assembly.GetExecutingAssembly())
+            .AddPipelineBehavior(typeof(LoggingBehavior<>)))
     .Build();
 
 using var scope = host.Services.CreateScope();

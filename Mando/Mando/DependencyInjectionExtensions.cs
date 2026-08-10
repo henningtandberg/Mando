@@ -24,6 +24,46 @@ public static class DependencyInjectionExtensions
         }
 
         /// <summary>
+        /// Registers a pipeline behavior. Behaviors run around command handlers in the order they
+        /// are registered (first registered is the outermost layer). Accepts closed types
+        /// (e.g. typeof(ValidateOrderBehavior)) and open generic types (e.g. typeof(LoggingBehavior&lt;&gt;))
+        /// which apply to every command.
+        /// </summary>
+        /// <param name="behaviorType">The behavior implementation type</param>
+        /// <returns>The collection of services with the behavior added</returns>
+        public IServiceCollection AddPipelineBehavior(Type behaviorType)
+        {
+            var behaviorInterfaces = behaviorType.GetInterfaces()
+                .Where(i => i.IsGenericType &&
+                            (i.GetGenericTypeDefinition() == typeof(IPipelineBehavior<>) ||
+                             i.GetGenericTypeDefinition() == typeof(IPipelineBehavior<,>)))
+                .ToList();
+
+            if (behaviorInterfaces.Count == 0)
+                throw new ArgumentException(
+                    $"{behaviorType} does not implement IPipelineBehavior<> or IPipelineBehavior<,>", nameof(behaviorType));
+
+            foreach (var behaviorInterface in behaviorInterfaces)
+            {
+                var serviceType = behaviorType.IsGenericTypeDefinition
+                    ? behaviorInterface.GetGenericTypeDefinition()
+                    : behaviorInterface;
+
+                services.AddTransient(serviceType, behaviorType);
+            }
+
+            return services;
+        }
+
+        /// <summary>
+        /// Registers a pipeline behavior. See <see cref="AddPipelineBehavior(Type)"/>.
+        /// </summary>
+        /// <typeparam name="TBehavior">The behavior implementation type</typeparam>
+        /// <returns>The collection of services with the behavior added</returns>
+        public IServiceCollection AddPipelineBehavior<TBehavior>() where TBehavior : class
+            => services.AddPipelineBehavior(typeof(TBehavior));
+
+        /// <summary>
         /// This registers all implementations ICommandHandler&lt;TCommand&gt; as scoped, and IDispatcher as scoped
         /// </summary>
         /// <param name="assembly">The executing assembly</param>
