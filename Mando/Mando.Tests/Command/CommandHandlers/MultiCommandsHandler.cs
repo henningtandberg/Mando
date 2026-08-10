@@ -10,19 +10,19 @@ public class AuditHandler(IStd std) :
 {
     private readonly string _handlerName = nameof(AuditHandler);
     
-    public Task Execute(CreateUser createUser)
+    public Task Execute(CreateUser createUser, CancellationToken cancellationToken)
     {
         std.Write($"User {createUser.Id} was created by {_handlerName}");
         return Task.CompletedTask;
     }
 
-    public Task Execute(UpdateUser updateUser)
+    public Task Execute(UpdateUser updateUser, CancellationToken cancellationToken)
     {
         std.Write($"User {updateUser.Id} was updated by {_handlerName}");
         return Task.CompletedTask;
     }
 
-    public Task Execute(DeleteUser deleteUser)
+    public Task Execute(DeleteUser deleteUser, CancellationToken cancellationToken)
     {
         std.Write($"User {deleteUser.Id} was deleted by {_handlerName}");
         return Task.CompletedTask;
