@@ -5,7 +5,7 @@ namespace Mando.Tests.Command.CommandHandlers;
 
 public sealed class EchoCommandHandler : ICommandHandler<EchoCommand, string>
 {
-    public Task<string> Execute(EchoCommand command)
+    public Task<string> Execute(EchoCommand command, CancellationToken cancellationToken)
     {
         return Task.FromResult(command.Message);
     }

@@ -6,7 +6,7 @@ namespace Mando.Tests.Command.CommandHandlers;
 
 public sealed class CommandHandlerThree(IStd std) : ICommandHandler<CommandThree>
 {
-    public Task Execute(CommandThree command)
+    public Task Execute(CommandThree command, CancellationToken cancellationToken)
     {
         std.Write("Command three executed!");
         return Task.CompletedTask;

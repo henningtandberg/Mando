@@ -7,7 +7,9 @@ internal sealed class Application(IDispatcher dispatcher, IEventBus eventBus) : 
 {
     public async Task RunAsync()
     {
-        await dispatcher.Dispatch(new DoSomethingCommand());
+        // A CancellationToken can be forwarded to command handlers; here it is left uncancelled.
+        using var cancellation = new CancellationTokenSource();
+        await dispatcher.Dispatch(new DoSomethingCommand(), cancellation.Token);
 
         using (new OrderNotifierRegisteredAnyTimeDuringRuntime(eventBus))
         {

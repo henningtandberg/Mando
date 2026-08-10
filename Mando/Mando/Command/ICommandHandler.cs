@@ -10,8 +10,9 @@ public interface ICommandHandler<in TCommand> : ICommandHandler where TCommand :
     /// The procedure to be executed
     /// </summary>
     /// <param name="command">The command</param>
+    /// <param name="cancellationToken">Token used to observe cancellation requests</param>
     /// <returns>void</returns>
-    public Task Execute(TCommand command);
+    public Task Execute(TCommand command, CancellationToken cancellationToken);
 }
 
 /// <summary>
@@ -25,8 +26,9 @@ public interface ICommandHandler<in TCommand, TResult> : ICommandHandler where T
     /// The procedure to be executed
     /// </summary>
     /// <param name="command">The command</param>
+    /// <param name="cancellationToken">Token used to observe cancellation requests</param>
     /// <returns>Result</returns>
-    public Task<TResult> Execute(TCommand command);
+    public Task<TResult> Execute(TCommand command, CancellationToken cancellationToken);
 }
 
 /// <summary>
