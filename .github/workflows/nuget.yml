@@ -14,6 +14,9 @@ jobs:
   publish:
     name: "Publish to NuGet Gallery"
     runs-on: "ubuntu-latest"
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -38,5 +41,11 @@ jobs:
       - name: "Pack project"
         run: dotnet pack ${{ env.PROJECT_PATH }} -p:PackageVersion=${{ github.event.release.tag_name }} --no-restore --no-build --configuration Release --include-symbols --output ${{ env.PACKAGE_OUTPUT_DIRECTORY }}
 
-      - name:  "Push package"
-        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/${{ env.SOLUTION_NAME }}.${{ github.event.release.tag_name }}.nupkg -s ${{ env.NUGET_SOURCE_URL }} -k ${{ secrets.NUGET_AUTH_TOKEN }}
+      - name: "NuGet login (trusted publishing)"
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: "Push package"
+        run: dotnet nuget push ${{ env.PACKAGE_OUTPUT_DIRECTORY }}/${{ matrix.package.name }}.${{ github.event.release.tag_name }}.nupkg -s ${{ env.NUGET_SOURCE_URL }} -k ${{ steps.login.outputs.NUGET_API_KEY }}
